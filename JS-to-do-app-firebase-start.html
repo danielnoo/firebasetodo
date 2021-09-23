@@ -101,56 +101,100 @@
   </main>
 
 <script src="https://kit.fontawesome.com/d776406e42.js" crossorigin="anonymous"></script>
-<script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
 
-const formElement = document.querySelector('form');
-const ulElement = document.querySelector('ul');
-
-formElement.addEventListener('submit', function(event) {
-  // When the form is submitted...
-  // don't actually submit the form
-  event.preventDefault();
-  
-  // get the task from the input
-  const inputElement = document.querySelector('input');
-  const task = inputElement.value;
-  
-    // if there is a task...
-  if (task) {  
-
-    // add the task as a list-item
-    const listItemElement = document.createElement('li');
-    listItemElement.innerHTML = '<i class="far fa-square"></i> ';
-    listItemElement.appendChild(document.createTextNode(task));
-
-    // add the new list-item element as a child to the unordered list
-    const ulElement = document.querySelector('ul');
-    ulElement.appendChild(listItemElement);
-
-    // clear the input field to an empty string
-    inputElement.value = '';
-  }
-
-});
+  <script>
+    // Psuedo Code
+    // * - get our firebase object 
+    // * - create a new firebase project (or use an old one)
+    // * - creating a name space and adding an init function
+    // * - query.Selectors to target our elements
+    // * - Create our references such as user entries
+    // * - Whenever user enters info, update the entries ref
+    // Get user entries on page load to populate list
+    // get data from user entries and print to screen
+    // toggle list items when checked and unchecked
 
 
-ulElement.addEventListener("click", function(event) {
+    // Creating our name space
+    const firebaseConfig = {
+        apiKey: "AIzaSyBMETEJhDFrv6C8Cd4G7HblzJPXUcOz8ik",
+        authDomain: "learnin-b741f.firebaseapp.com",
+        databaseURL: "https://learnin-b741f-default-rtdb.firebaseio.com",
+        projectId: "learnin-b741f",
+        storageBucket: "learnin-b741f.appspot.com",
+        messagingSenderId: "903350793365",
+        appId: "1:903350793365:web:855bf4a864fa411e5f179c"
+      };
 
-  if (event.target.tagName === 'I') {
-    // tasks to perform
-    updateToDo(event.target);
-  }
-  
-});
+    firebase.initializeApp(firebaseConfig)
+    const dbRef = firebase.database().ref()
 
-function updateToDo(iElement) {
-  
-  iElement.classList.toggle('fa-square');
-  iElement.classList.toggle('fa-check-square');
-  iElement.parentElement.classList.toggle('text-muted');
+    const app = {}
+    // Creating a few namespace variables
+    app.toDosList = []
+    // Making reference to the DOM elements
+    app.formElement = document.querySelector('form')
+    app.ulElement = document.querySelector('ul')
 
-}
+    //FIREBASE FUNCTIONS
+    // Grab our content from firebase
+    dbRef.on('value', (data) => {
+      
+      const firebaseData = data.val()
 
-</script>
+      app.ulElement.innerHTML = ''
+      app.toDosList = []
+
+      for (props in firebaseData) {
+        const listItem = document.createElement('li')
+        listItem.innerHTML = `<i class="far fa-square"></i>`;
+        listItem.append(firebaseData[props].description)
+        app.toDosList.push(listItem)
+      }
+
+      for (let i = 0; i < app.toDosList.length; i++) {
+        app.ulElement.appendChild(app.toDosList[i])
+      }
+    })
+
+    // EVENT LISTENER FUNCTIONS
+    // Creating a event function on the form
+    app.formElement.addEventListener('submit', (event) => {
+      // preventing the default form submit function
+      event.preventDefault()
+      // grabbing the content from the input element
+      const inputHTML = document.querySelector('input')
+      const inputText = document.querySelector('input').value
+
+
+      if(inputText) {
+        const toDoObj = {
+          description: inputText
+        }
+      } else {
+        alert('please enter some text')
+        return
+      }
+      // creating the new object
+      
+
+      
+      // saving the content to firebase!!
+      dbRef.push(toDoObj)
+      inputHTML.value = ''
+    })
+
+    // Our init functions.
+    app.init = () => {
+      // console.log(dbRef)
+    }
+
+    // Calling our init function
+    app.init()
+
+
+  </script>
 </body>
 </html>
