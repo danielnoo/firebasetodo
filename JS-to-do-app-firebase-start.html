@@ -141,13 +141,14 @@
     //FIREBASE FUNCTIONS
     // Grab our content from firebase
     dbRef.on('value', (data) => {
-      
+      dbRef.child('poop').remove()
       const firebaseData = data.val()
 
       app.ulElement.innerHTML = ''
       app.toDosList = []
 
       for (props in firebaseData) {
+        console.log(firebaseData)
         const listItem = document.createElement('li')
         listItem.innerHTML = `<i class="far fa-square"></i>`;
         listItem.append(firebaseData[props].description)
@@ -170,25 +171,29 @@
 
 
       if(inputText) {
+        // creating the new object
         const toDoObj = {
           description: inputText
         }
+        // saving the content to firebase!!
+        dbRef.push(toDoObj)
       } else {
         alert('please enter some text')
         return
       }
-      // creating the new object
       
-
-      
-      // saving the content to firebase!!
-      dbRef.push(toDoObj)
+       
       inputHTML.value = ''
     })
 
+    
+    function removeEntry (entryText) {
+
+    }
+    
     // Our init functions.
     app.init = () => {
-      // console.log(dbRef)
+      // console.log()
     }
 
     // Calling our init function
